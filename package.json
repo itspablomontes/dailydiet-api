@@ -1,39 +1,44 @@
 {
-	"name": "dailydiet-api",
-	"version": "1.0.0",
-	"description": "",
-	"main": "index.js",
-	"scripts": {
-		"start": "node ./dist/server.js",
-		"dev": "tsx --watch ./src/server.ts",
-		"lint": "npx @biomejs/biome lint --write ./src/"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/itspablomontes/dailydiet-api.git"
-	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
-	"type": "commonjs",
-	"bugs": {
-		"url": "https://github.com/itspablomontes/dailydiet-api/issues"
-	},
-	"homepage": "https://github.com/itspablomontes/dailydiet-api#readme",
-	"devDependencies": {
-		"@biomejs/biome": "1.9.4",
-		"@types/express": "^5.0.1",
-		"@types/node": "^22.13.11",
-		"@types/pg": "^8.11.11",
-		"supertest": "^7.1.0",
-		"tsx": "^4.19.3",
-		"typescript": "^5.8.2",
-		"vitest": "^3.0.9"
-	},
-	"dependencies": {
-		"dotenv": "^16.4.7",
-		"express": "^4.21.2",
-		"pg": "^8.14.1",
-		"zod": "^3.24.2"
-	}
+  "name": "dailydiet-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./dist/server.js",
+    "dev": "pnpm db:run && tsx --watch ./src/server.ts",
+    "lint": "npx @biomejs/biome lint --write ./src/",
+    "prepare": "husky",
+    "docker:compose": "docker compose -f ./compose.yaml --env-file=.env",
+    "db:run": "pnpm docker:compose up -d",
+    "db:stop": "pnpm docker:compose down"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itspablomontes/dailydiet-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/itspablomontes/dailydiet-api/issues"
+  },
+  "homepage": "https://github.com/itspablomontes/dailydiet-api#readme",
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@types/express": "5.0.1",
+    "@types/node": "22.13.11",
+    "husky": "9.1.7",
+    "lint-staged": "15.5.0",
+    "prisma": "6.6.0",
+    "supertest": "7.1.0",
+    "tsx": "4.19.3",
+    "typescript": "5.8.2",
+    "vitest": "3.0.9"
+  },
+  "dependencies": {
+    "dotenv": "16.4.7",
+    "express": "4.21.2",
+    "zod": "3.24.2"
+  }
 }
