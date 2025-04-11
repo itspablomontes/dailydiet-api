@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/1.9.2/schema.json",
   "vcs": {
     "enabled": false,
     "clientKind": "git",
@@ -7,7 +7,12 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": [".next", "node_modules", "components.json"]
+    "ignore": [
+      "node_modules",
+      "tsconfig.json",
+      "tsconfig.app.json",
+      "tsconfig.node.json"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -15,15 +20,13 @@
     "lineEnding": "lf"
   },
   "organizeImports": {
-    "enabled": true
+    "enabled": false
   },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true,
-
       "a11y": {
-        "useKeyWithClickEvents": "off",
         "noSvgWithoutTitle": "off",
         "useButtonType": "off"
       },
@@ -32,15 +35,12 @@
       },
       "style": {
         "noNonNullAssertion": "off"
-      },
-      "suspicious": {
-        "noArrayIndexKey": "off",
-        "noShadowRestrictedNames": "off"
       }
     }
   },
   "javascript": {
     "formatter": {
+      "quoteStyle": "double",
       "trailingCommas": "all"
     }
   }
