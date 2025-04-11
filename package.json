@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./dist/server.js",
-    "dev": "pnpm db:run && tsx --watch ./src/server.ts",
+    "dev": "pnpm db:run && tsx --watch ./src/server.ts; pnpm db:stop",
     "lint": "npx @biomejs/biome lint --write ./src/",
     "prepare": "husky",
     "docker:compose": "docker compose -f ./compose.yaml --env-file=.env",
