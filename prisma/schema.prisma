@@ -1,0 +1,129 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MealCategory {
+  BREAKFAST
+  LUNCH
+  SNACK
+  DINNER
+}
+
+enum GoalType {
+  CALORIE
+  DIET_ADHERENCE
+}
+
+model User {
+  id                     Int                      @id @default(autoincrement())
+  name                   String
+  email                  String                   @unique
+  password               String
+  isVerified             Boolean                  @default(false)
+  EmailVerificationToken EmailVerificationToken[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  PasswordResetToken PasswordResetToken[]
+  Session            Session[]
+  Meal               Meal[]
+  UserGoal           UserGoal[]
+
+  @@map("users")
+}
+
+model UserGoal {
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
+  type        GoalType
+  targetValue Float
+  endDate     DateTime
+  startDate   DateTime
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("user_goals")
+}
+
+model EmailVerificationToken {
+  id     Int    @id @default(autoincrement())
+  token  String @unique
+  user   User   @relation(fields: [userId], references: [id])
+  userId Int
+
+  expires_at DateTime
+  created_at DateTime @default(now())
+
+  @@map("email_verification_tokens")
+}
+
+model PasswordResetToken {
+  id     Int    @id @default(autoincrement())
+  token  String @unique
+  user   User   @relation(fields: [userId], references: [id])
+  userId Int
+
+  expires_at DateTime
+  created_at DateTime @default(now())
+
+  @@map("password_reset_tokens")
+}
+
+model Session {
+  id           Int    @id @default(autoincrement())
+  user         User   @relation(fields: [userId], references: [id])
+  userId       Int
+  refreshToken String @unique
+
+  expires_at DateTime
+  created_at DateTime @default(now())
+
+  @@map("sessions")
+}
+
+model Meal {
+  id           Int           @id @default(autoincrement())
+  user         User          @relation(fields: [userId], references: [id])
+  userId       Int
+  name         String
+  description  String?
+  dateTime     DateTime
+  isWhitinDiet Boolean
+  calories     Int?
+  category     MealCategory?
+  photoUrl     String?
+  isFavorite   Boolean       @default(false)
+
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+  MealHistory MealHistory[]
+
+  @@map("meals")
+}
+
+model MealHistory {
+  id             Int    @id @default(autoincrement())
+  meal           Meal   @relation(fields: [mealId], references: [id])
+  mealId         Int
+  changedFields  String
+  previousValues String
+
+  changed_at DateTime @default(now())
+
+  @@map("meal_histories")
+}
