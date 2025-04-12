@@ -88,8 +88,21 @@ model Meal {
   photoUrl     String?
   isFavorite   Boolean       @default(false)
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+  MealHistory MealHistory[]
 
   @@map("meals")
+}
+
+model MealHistory {
+  id             Int    @id @default(autoincrement())
+  meal           Meal   @relation(fields: [mealId], references: [id])
+  mealId         Int
+  changedFields  String
+  previousValues String
+
+  changed_at DateTime @default(now())
+
+  @@map("meal_histories")
 }
