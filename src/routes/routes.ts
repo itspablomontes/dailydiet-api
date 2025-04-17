@@ -9,7 +9,7 @@ const setupRoutes = (app: Express) => {
     res.status(200).json({ message: "Server is running!" });
   });
 
-  app.use(authRoutes);
+  app.use("/auth", authRoutes);
 };
 
 export { setupRoutes };
