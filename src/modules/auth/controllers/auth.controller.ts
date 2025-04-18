@@ -84,6 +84,7 @@ class AuthController {
     try {
       const { refreshToken } = refreshSchema.parse(req.body);
       await this.authService.logout(refreshToken, req.user?.id!);
+      res.status(200).json({ message: "Logout was successful" });
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({ errors: error.errors });
