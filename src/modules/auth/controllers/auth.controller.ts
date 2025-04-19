@@ -41,7 +41,15 @@ class AuthController {
     try {
       const input = loginSchema.parse(req.body);
       const result = await this.authService.login(input);
-      res.status(200).json(result);
+      res
+        .cookie("refreshToken", result.refreshToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        })
+        .status(200)
+        .json({ token: result.token, user: result.user });
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({ errors: error.errors });
@@ -61,7 +69,12 @@ class AuthController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const { refreshToken } = refreshSchema.parse(req.body);
+      const refreshToken = req.cookies.refreshToken;
+      console.log(refreshToken);
+
+      if (!refreshToken) {
+        res.status(401).json({ error: "Missing Refresh Token" });
+      }
       const result = await this.authService.refresh(refreshToken);
       res.status(200).json(result);
     } catch (error) {
@@ -82,9 +95,18 @@ class AuthController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const { refreshToken } = refreshSchema.parse(req.body);
+      const refreshToken = req.cookies.refreshToken;
+
       await this.authService.logout(refreshToken, req.user?.id!);
-      res.status(200).json({ message: "Logout was successful" });
+
+      res
+        .clearCookie("refreshToken", {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+        })
+        .status(200)
+        .json({ message: "Logout was successful" });
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({ errors: error.errors });
