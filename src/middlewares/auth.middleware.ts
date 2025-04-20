@@ -11,10 +11,10 @@ export const authMiddleware = (
   next: NextFunction,
 ) => {
   const authHeader = req.headers.authorization;
-  const token = authHeader?.split(" ")[1];
+  const accessToken = authHeader?.split(" ")[1];
 
-  if (!token) {
-    res.status(401).json({ error: "Token Required" });
+  if (!accessToken) {
+    res.status(401).json({ error: "Access Token Required" });
     return;
   }
 
@@ -26,11 +26,11 @@ export const authMiddleware = (
   }
 
   try {
-    const decoded = jwt.verify(token, jwtSecret) as jwtPayload;
+    const decoded = jwt.verify(accessToken, jwtSecret) as jwtPayload;
     req.user = { id: decoded.id };
     next();
   } catch (error) {
-    res.status(401).json({ error: "Invalid token" });
+    res.status(401).json({ error: "Invalid Access Token" });
     return;
   }
 };

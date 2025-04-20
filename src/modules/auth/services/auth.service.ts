@@ -7,7 +7,7 @@ import { randomUUID } from "node:crypto";
 export class AuthService {
   constructor(private authRepository: IAuthRepository) {}
 
-  private generateToken(userId: number): string {
+  private generateAccessToken(userId: number): string {
     return jwt.sign({ id: userId }, process.env.JWT_SECRET!, {
       expiresIn: "1h",
     });
@@ -17,7 +17,7 @@ export class AuthService {
     name: string;
     email: string;
     password: string;
-  }): Promise<{ token: string; user: Partial<User> }> {
+  }): Promise<{ user: Partial<User> }> {
     const existingUser = await this.authRepository.findUserByEmail(data.email);
     if (existingUser) {
       throw new Error("Email already in use");
@@ -31,10 +31,7 @@ export class AuthService {
       password: hashedPassword,
     });
 
-    const token = this.generateToken(user.id);
-
     return {
-      token,
       user: {
         id: user.id,
         name: user.name,
@@ -46,37 +43,35 @@ export class AuthService {
   async login(data: {
     email: string;
     password: string;
-  }): Promise<{ token: string; refreshToken: string; user: Partial<User> }> {
-    const existingUser = await this.authRepository.findUserByEmail(data.email);
+  }): Promise<{
+    accessToken: string;
+    refreshToken: string;
+    user: Partial<User>;
+  }> {
+    const user = await this.authRepository.findUserByEmail(data.email);
 
-    if (!existingUser) {
+    if (!user) {
       throw new Error("This account doesn't exist");
     }
 
-    const isPasswordValid = await bcrypt.compare(
-      data.password,
-      existingUser.password,
-    );
+    const isPasswordValid = await bcrypt.compare(data.password, user.password);
     if (!isPasswordValid) {
       throw new Error("Invalid Password");
     }
 
-    const token = this.generateToken(existingUser.id);
+    const accessToken = this.generateAccessToken(user.id);
 
     const refreshToken = randomUUID();
     const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
-    await this.authRepository.createSession(
-      existingUser.id,
-      refreshToken,
-      expiresAt,
-    );
+    await this.authRepository.createSession(user.id, refreshToken, expiresAt);
 
     return {
-      token,
+      accessToken,
       refreshToken,
       user: {
-        email: existingUser.email,
-        name: existingUser.name,
+        id: user.id,
+        email: user.email,
+        name: user.name,
       },
     };
   }
@@ -95,10 +90,10 @@ export class AuthService {
       throw new Error("User not found!");
     }
 
-    const token = this.generateToken(user.id);
+    const accessToken = this.generateAccessToken(user.id);
 
     return {
-      token,
+      accessToken,
       user: {
         id: user?.id,
       },

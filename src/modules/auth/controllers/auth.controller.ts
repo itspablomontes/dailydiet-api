@@ -49,7 +49,7 @@ class AuthController {
           maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
         })
         .status(200)
-        .json({ token: result.token, user: result.user });
+        .json({ acessToken: result.accessToken, user: result.user });
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({ errors: error.errors });
