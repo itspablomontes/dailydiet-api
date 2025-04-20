@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 
 interface jwtPayload {
   id: number;
+  role: "USER" | "ADMIN";
 }
 
 export const authMiddleware = (
@@ -27,7 +28,7 @@ export const authMiddleware = (
 
   try {
     const decoded = jwt.verify(accessToken, jwtSecret) as jwtPayload;
-    req.user = { id: decoded.id };
+    req.user = { id: decoded.id, role: decoded.role };
     next();
   } catch (error) {
     res.status(401).json({ error: "Invalid Access Token" });
