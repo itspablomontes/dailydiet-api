@@ -48,8 +48,14 @@ class AuthController {
           sameSite: "strict",
           maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
         })
+        .cookie("accessToken", result.accessToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 30 * 24 * 60 * 60 * 1000,
+        })
         .status(200)
-        .json({ acessToken: result.accessToken, user: result.user });
+        .json({ user: result.user });
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({ errors: error.errors });
@@ -101,6 +107,11 @@ class AuthController {
 
       res
         .clearCookie("refreshToken", {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+        })
+        .clearCookie("accessToken", {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
           sameSite: "strict",

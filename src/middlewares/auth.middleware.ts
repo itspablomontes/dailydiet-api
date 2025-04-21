@@ -11,8 +11,7 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  const authHeader = req.headers.authorization;
-  const accessToken = authHeader?.split(" ")[1];
+  const accessToken = req.cookies.accessToken;
 
   if (!accessToken) {
     res.status(401).json({ error: "Access Token Required" });
