@@ -1,5 +1,10 @@
 import { app } from "./app";
+import { setupRoutes } from "./routes/routes";
 
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
+setupRoutes(app);
+
+const PORT = process.env.PORT;
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
