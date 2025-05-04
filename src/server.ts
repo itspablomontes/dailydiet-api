@@ -1,5 +1,7 @@
 import { app } from "./app";
 import { setupRoutes } from "./routes/routes";
+import dotenv from "dotenv";
+dotenv.config();
 
 setupRoutes(app);
 
